@@ -2,14 +2,12 @@
 import sys
 import os
 message=sys.argv[1]
-key=sys.argv[2]
-f=open("message.bin",'w')
+keyFile=sys.argv[2]
+f=open("message.txt",'w')
 f.write(message)
 f.close()
-#f=open(keyFile,'r')
-#unfilteredkey=f.read()
-#f.close()
-#key=unfilteredkey.split('\n')[1:-2]
-#key='\n'.join(key)
-encryptCMD="openssl enc -aes-256-ctr -e -k "+ key + " -in message.bin -out encr$
+encryptCMD="openssl rsautl -encrypt -inkey "+keyFile+" -pubin -in message.txt -$
 k=os.popen(encryptCMD).readlines()
+rmCmd="rm message.txt"
+l=os.popen(encryptCMD).readlines()
+
