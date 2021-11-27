@@ -1,6 +1,9 @@
 #!/usr/bin/python
+#https://codingbee.net/centos/openssl-demo-encrypting-decrypting-files-using-bo$
+#Used to generate two keys using two different commands. Needed for key exchange
 import os
-generateCMD="openssl genrsa -aes256 -out privateKey.pem"
-k=os.popen(generateCMD).readlines()
-publicKeyGen="openssl rsa -in privateKey.pem -pubout > publicKey.pem"
+genPrivateKeyCMD="openssl genpkey -algorithm rsa -out privateKey.pem -pkeyopt r$
+k=os.popen(genPrivateKeyCMD).readlines()
+publicKeyGen="openssl rsa -pubout -in privateKey.pem -out publicKey.pem"
 k=os.popen(publicKeyGen).readlines()
+
