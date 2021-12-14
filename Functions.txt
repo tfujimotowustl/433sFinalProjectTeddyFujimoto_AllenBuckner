@@ -1,0 +1,25 @@
+
+
+
+
+def encrypt(string):
+	f=open("message.txt",'w') #writes to a new message file
+	f.write(string)
+	f.close()
+	encryptCMD="openssl rsautl -encrypt -inkey "+ publicKey.pem +" -pubin -in message.txt -out cipher.bin$
+	k=os.popen(encryptCMD).readlines()
+	rmCmd="rm message.txt"	
+	l=os.popen(encryptCMD).readlines()
+	return
+
+def decrypt(file)
+	encryptCMD="openssl rsautl -decrypt -inkey "+ privateKey.pem + " -in "+file+"  -out plain.txt"$
+	k=os.popen(encryptCMD).readlines()
+	return
+
+def keygen()
+	genPrivateKeyCMD="openssl genpkey -algorithm rsa -out privateKey.pem -pkeyopt rsa_keygen_bits:256 $
+	k=os.popen(genPrivateKeyCMD).readlines()
+	publicKeyGen="openssl rsa -pubout -in privateKey.pem -out publicKey.pem"
+	k=os.popen(publicKeyGen).readlines()
+	return
