@@ -2,7 +2,7 @@ import socket
 from threading import Thread
 
 # server's IP address
-SERVER_HOST = "192.168.0.101"
+SERVER_HOST = "192.168.0.113"
 SERVER_PORT = 5002 # port we want to use
 separator_token = "<SEP>" # we will use this to separate the client name & message
 
@@ -26,20 +26,20 @@ def listen_for_client(cs):
     while True:
         try:
             # keep listening for a message from `cs` socket
-            msg = cs.recv(1024).decode()
+            msg = cs.recv(1024)
         except Exception as e:
             # client no longer connected
             # remove it from the set
             print(f"[!] Error: {e}")
             client_sockets.remove(cs)
-        else:
-            # if we received a message, replace the <SEP> 
-            # token with ": " for nice printing
-            msg = msg.replace(separator_token, ": ")
+        # else:
+        #     # if we received a message, replace the <SEP> 
+        #     # token with ": " for nice printing
+        #     msg = msg.replace(separator_token, ": ")
         # iterate over all connected sockets
         for client_socket in client_sockets:
             # and send the message
-            client_socket.send(msg.encode())
+            client_socket.send(msg)
 
 
 while True:
