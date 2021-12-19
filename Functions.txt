@@ -1,7 +1,3 @@
-
-
-
-
 def encrypt(string):
 	f=open("message.txt",'w') #writes to a new message file
 	f.write(string)

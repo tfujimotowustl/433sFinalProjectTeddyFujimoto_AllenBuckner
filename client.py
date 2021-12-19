@@ -1,38 +1,23 @@
 import socket
 import random
 from threading import Thread
-from datetime import datetime
-from colorama import Fore, init, Back
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
+from colorama import init, Fore, Style
 
-# init colors
+#Initialization for Colors
 init()
 
-# set the available colors
-colors = [Fore.BLUE, Fore.CYAN, Fore.GREEN, Fore.LIGHTBLACK_EX, 
-    Fore.LIGHTBLUE_EX, Fore.LIGHTCYAN_EX, Fore.LIGHTGREEN_EX, 
-    Fore.LIGHTMAGENTA_EX, Fore.LIGHTRED_EX, Fore.LIGHTWHITE_EX, 
-    Fore.LIGHTYELLOW_EX, Fore.MAGENTA, Fore.RED, Fore.WHITE, Fore.YELLOW
-]
 
-# choose a random color for the client
-client_color = random.choice(colors)
+SERVER_HOST = "192.168.4.63" # The IP address of the server
+SERVER_PORT = 5002 # The port we're using on our server
 
-# server's IP address
-# if the server is not on this machine, 
-# put the private (network) IP address (e.g 192.168.1.2)
-SERVER_HOST = "192.168.0.113"
-SERVER_PORT = 5002 # server's port
-separator_token = "<SEP>" # we will use this to separate the client name & message
-
-
-# initialize TCP socket
+# Set up Socket
 s = socket.socket()
 print(f"[*] Connecting to {SERVER_HOST}:{SERVER_PORT}...")
-# connect to the server
+# Connect to Server
 s.connect((SERVER_HOST, SERVER_PORT))
 print("[+] Connected.")
 
@@ -49,40 +34,42 @@ with open("public_key.pem", "rb") as key_file:
         backend=default_backend()
     )
 
-# prompt the client for a name
-name = input("Enter your name: ")
+#Starting Message
+print("Hello, Welcome to the Chat Server! Begin Chatting when you're ready!")
 
 def listen_for_messages():
     while True:
         encrypted = s.recv(1024)
-        # i = encrypted.index("'b")
-        # a, b = f[:i+1], f[i+1:]
-
-        omessage = private_key.decrypt( #Decrypt
-            encrypted,
-            padding.OAEP(
-                mgf=padding.MGF1(algorithm=hashes.SHA256()),
-                algorithm=hashes.SHA256(),
-                label=None
+        
+        #Decryption
+        try:
+            omessage = private_key.decrypt( 
+                encrypted,
+                padding.OAEP(
+                    mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                    algorithm=hashes.SHA256(),
+                    label=None
+                )
             )
-        )
-        print("\n" + omessage.decode())
+            print(Fore.GREEN + "\n" + "--> " + omessage.decode() + Style.RESET_ALL)
+        #Print received message for display
+        except ValueError:
+            omessage = ""
 
-# make a thread that listens for messages to this client & print them
+# Thread for listening for messages
 t = Thread(target=listen_for_messages)
-# make the thread daemon so it ends whenever the main thread ends
 t.daemon = True
-# start the thread
+# Starts the thread
 t.start()
 
 while True:
-    # input message we want to send to the server
-    to_send =  input()
-    # a way to exit the program
+    to_send =  input() # Gets the messag to send
     message = to_send.encode()
-    if to_send.lower() == 'q':
+    if to_send.lower() == 'q': #allows q for exiting the program
         break
-    encrypted = public_key.encrypt( #Encryption
+
+    #Encryption
+    encrypted = public_key.encrypt(
         message,
         padding.OAEP(
             mgf=padding.MGF1(algorithm=hashes.SHA256()),
@@ -90,11 +77,6 @@ while True:
             label=None
         )
     )
-    # add the datetime, name & the color of the sender
-    # date_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
-    # to_send = f"{client_color}[{date_now}] {name}{separator_token}{encrypted}{Fore.RESET}"
-    # finally, send the message
     s.send(encrypted)
 
-# close the socket
 s.close()
