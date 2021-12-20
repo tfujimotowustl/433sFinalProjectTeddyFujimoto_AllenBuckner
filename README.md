@@ -7,3 +7,5 @@ Change IP address for server.py and client.py files to match the IP address of a
 Run server.py on the computer you wish to have your server on.
 
 Run client.py on the computer you wish to connect to as a client.
+
+Have fun chatting!
